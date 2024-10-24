@@ -39,3 +39,16 @@ export const login = async(req) => {
     return res.data;
 };
 
+export const getRoutes = async({lat, lon, dest}) => {
+    
+        let res;
+    
+        try{
+            res = await axios.get(`user/route?lat=${lat}&lon=${lon}&dest=${dest}`)
+        }catch(err){
+            console.log(err);
+        }
+    
+        console.log(res.data) ;
+        return res.data;
+    }

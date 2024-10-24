@@ -1,23 +1,46 @@
-import React, { useState } from 'react';
-import { login, signup } from '../api-helpers';
+import React, { useEffect, useState } from 'react';
+import { getRoutes, login, signup } from '../api-helpers';
 import { useNavigate } from 'react-router-dom';
 
 const NewItineraryForm = () => {
   const [tripInfo, setTripInfo] = useState({ destination: '', startDate: '', endDate: '' });
   const navigate = useNavigate();
 
+  const [location, setLocation] = useState({
+    loaded: false,
+    coordinates: { lat: '', lng: '' },
+  });
+
+  useEffect(() => {
+    if (!('geolocation' in navigator)) {
+      setLocation({ loaded: true, error: { message: 'Geolocation not supported' } });
+    } else {
+      navigator.geolocation.getCurrentPosition((loc) => {
+        setLocation({
+          loaded: true,
+          coordinates: {
+            lat: loc.coords.latitude,
+            lng: loc.coords.longitude,
+          },
+        });
+      });
+    }
+  }, []);
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // login({
-    //     email: loginInfo.email,
-    //     password: loginInfo.password
-    // }).then((res) => {
-    //     if(res?.success) {
-    //         localStorage.setItem('token', res.token);
-    //         navigate('/itinerary');
-    //     }  
-    // })
-    navigate('/routes')
+    getRoutes({
+        lat: location.coordinates.lat,
+        lon: location.coordinates.lng,
+        dest: tripInfo.destination,
+    }).then((res) => {
+        if(res?.success) {
+            localStorage.setItem('start', tripInfo.startDate);
+            localStorage.setItem('end', tripInfo.endDate);
+            navigate('/routes');
+        }  
+    })
   };
 
   return (
