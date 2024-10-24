@@ -1,20 +1,62 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Route {
+  id             Int               @id @default(autoincrement())
+  comment        String?           // Optional comment about the route
+  score          Float?            // Optional score or rating for the route
+
+  // Foreign keys to Description with unique constraints
+  srcId          Int    @unique
+  src            Description       @relation("RouteSrc", fields: [srcId], references: [id])
+
+  destId         Int    @unique
+  dest           Description       @relation("RouteDest", fields: [destId], references: [id])
+
+  transportations Transportation[]
+}
+
+model Transportation {
+  id      Int     @id @default(autoincrement())
+  name    String  // e.g., 'bus + ferry', 'truck + bike'
+
+  // Foreign key to Route
+  routeId Int
+  route   Route   @relation(fields: [routeId], references: [id])
+
+  waypoints Waypoint[]
+}
+
+model Waypoint {
+  id         Int    @id @default(autoincrement())
+  medium     String // e.g., 'bus', 'ferry'
+  time       String // e.g., '6-7 hours'
+  cost       Int    // Cost in integer format
+
+  // Foreign key to Transportation
+  transportationId Int
+  transportation   Transportation @relation(fields: [transportationId], references: [id])
+
+  descriptions Description[]
+}
+
+model Description {
+  id         Int    @id @default(autoincrement())
+  latitude   Float
+  longitude  Float
+  geojson    Json? // Storing geojson objects (optional)
+
+  // One-to-one relations for src and dest in Route
+  routeSrc   Route? @relation("RouteSrc")
+  routeDest  Route? @relation("RouteDest")
+
+  // Foreign key to Waypoint (optional, for non-route descriptions)
+  waypointId Int?
+  waypoint   Waypoint? @relation(fields: [waypointId], references: [id])
 }
