@@ -1,4 +1,4 @@
-npx prisma migrate dev --name init
+# npx prisma migrate dev --name init
 
 
 ### need a database schema for the following json
