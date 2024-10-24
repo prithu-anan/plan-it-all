@@ -86,6 +86,37 @@ async function getAllUsers(req, res) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 }
+function addTotalsToTransportations(route) {
+  const updatedTransportations = route.transportations.map((transportation) => {
+    // Calculate the total cost and time from the waypoints
+    const totalCost = transportation.waypoints.reduce(
+      (sum, waypoint) => sum + waypoint.cost,
+      0
+    );
+
+    const totalTime = transportation.waypoints.reduce(
+      (sum, waypoint) => sum + parseFloat(waypoint.time), // Convert time to float
+      0
+    );
+
+    console.log("total time: " + totalTime,"total cost: " + totalCost)
+
+    // Add totalCost and totalTime to the transportation object
+    return {
+      ...transportation,
+      cost: totalCost, // Add total cost field
+      time: totalTime, // Add total time field
+    };
+  });
+
+  // Return the updated route with modified transportations
+  return {
+    ...route,
+    transportations: updatedTransportations,
+  };
+}
+
+
 
 async function getRoutes(req, res) {
 
@@ -120,7 +151,8 @@ async function getRoutes(req, res) {
 
     if (existingRoute) {
       console.log('Route found in database:', existingRoute);
-      return res.json(existingRoute);
+      const enhancedRoute = addTotalsToTransportations(existingRoute);
+     return res.json(enhancedRoute);
     }
 
     // 2. If the route does not exist, call the external API to generate it
@@ -180,12 +212,20 @@ async function getRoutes(req, res) {
     });
 
     console.log('Saved route to database:', savedRoute);
-    return res.json(savedRoute);
+
+    const enhancedRoute = addTotalsToTransportations(savedRoute);
+     return res.json(enhancedRoute);
   } catch (err) {
     console.error('Error fetching or saving routes:', err);
     res.status(500).json({ success: false, message: 'An error occurred.' });
   }
 }
+
+async function getTransport(req,res){
+
+
+}
+
 
 
 
