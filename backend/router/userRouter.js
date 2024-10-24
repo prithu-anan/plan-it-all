@@ -13,4 +13,7 @@ userRouter.route('/signup')
 userRouter.route('/login')
 .post(userController.login);
 
+userRouter.route('/route')
+.get(userController.getRoutes);
+
 module.exports = userRouter;
