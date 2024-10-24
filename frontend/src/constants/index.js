@@ -42,6 +42,10 @@ import {
       id: "contact",
       title: "Contact",
     },
+    {
+      id: "auth",
+      title: "Login",
+    }
   ];
   
   const services = [

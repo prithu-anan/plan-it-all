@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { Hero, Navbar, ItineraryForm } from './components'
+import { Hero, Navbar, ItineraryForm, LoginRegistrationCard } from './components'
 
 function App() {
   return (
@@ -10,6 +10,7 @@ function App() {
           <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/itinerary" element={<ItineraryForm />} />
+          <Route path="/auth" element={<LoginRegistrationCard />} />
         </Routes>
         </div>
       </div>
