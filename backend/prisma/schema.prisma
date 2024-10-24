@@ -7,31 +7,27 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
 model Route {
-  id             Int               @id @default(autoincrement())
-  comment        String?           // Optional comment about the route
-  score          Float?            // Optional score or rating for the route
+  id             Int    @id @default(autoincrement())
 
-  // Foreign keys to Description with unique constraints
-  srcId          Int    @unique
-  src            Description       @relation("RouteSrc", fields: [srcId], references: [id])
+  srcId          Int
+  src            Description @relation("RouteSrc", fields: [srcId], references: [id])
 
-  destId         Int    @unique
-  dest           Description       @relation("RouteDest", fields: [destId], references: [id])
+  destId         Int
+  dest           Description @relation("RouteDest", fields: [destId], references: [id])
 
-  // One-to-one relation with Trip
-  trip           Trip?
-  
+  trip           Trip?  // One-to-one relation with Trip
+
   transportations Transportation[]
 }
-
 model Trip {
-  id             Int      @id @default(autoincrement())
-  routeId        Int      @unique
-  route          Route    @relation(fields: [routeId], references: [id])
-  
+  id             Int    @id @default(autoincrement())
+  routeId        Int    @unique
+  route          Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
   userId         Int
-  user           User     @relation(fields: [userId], references: [id])
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   startDate      DateTime
   endDate        DateTime
@@ -42,16 +38,18 @@ model Trip {
 }
 
 model Image {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
 
-  tripId      Int?
-  trip        Trip?    @relation(fields: [tripId], references: [id])
+  tripId           Int?
+  trip             Trip?    @relation(fields: [tripId], references: [id])
 
-  url         String
-  description String   // For natural language search
-  uploadedAt  DateTime @default(now())
+  url              String
+  aiGeneratedCaption String?
+  userComment      String?
+  location         String
+  uploadedAt       DateTime
 }
 
 model Blog {
@@ -66,7 +64,6 @@ model Blog {
   content     String
   createdAt   DateTime @default(now())
 }
-
 model User {
   id          Int      @id @default(autoincrement())
   name        String
@@ -83,8 +80,9 @@ model User {
 
 model Transportation {
   id      Int     @id @default(autoincrement())
-  name    String  // e.g., 'bus + ferry', 'truck + bike'
-
+  name    String
+  comment        String?
+  score          Float?
   routeId Int
   route   Route   @relation(fields: [routeId], references: [id])
 
@@ -93,8 +91,8 @@ model Transportation {
 
 model Waypoint {
   id         Int    @id @default(autoincrement())
-  medium     String // e.g., 'bus', 'ferry'
-  time       String // e.g., '6-7 hours'
+  medium     String
+  time       String
   cost       Int
 
   transportationId Int
@@ -103,14 +101,16 @@ model Waypoint {
   descriptions Description[]
 }
 
+
 model Description {
   id         Int    @id @default(autoincrement())
+  name       String
   latitude   Float
   longitude  Float
-  geojson    Json?  // Optional geojson data
+  geojson    Json?
 
-  routeSrc   Route? @relation("RouteSrc")
-  routeDest  Route? @relation("RouteDest")
+  routesSrc  Route[] @relation("RouteSrc")  // One-to-many relation
+  routesDest Route[] @relation("RouteDest") // One-to-many relation
 
   waypointId Int?
   waypoint   Waypoint? @relation(fields: [waypointId], references: [id])

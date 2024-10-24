@@ -37,6 +37,8 @@ async function checkDatabaseConnection() {
     app.use("/user",userRouter);
 
     app.use("/weather",weatherRouter);
+
+    
   
     app.use("/", (req, res) => {
       res.json("welcome to Plan It All");
