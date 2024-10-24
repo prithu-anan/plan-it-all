@@ -7,7 +7,7 @@ import { fadeIn, textVariant } from '../utils/motion'
 import { SectionWrapper } from '../hoc'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-const ServiceCard = ({ index, name, comment, score }) => {
+const ServiceCard = ({ index, cost, time, name, comment, score }) => {
   return (
     <Tilt className="xs:w-[250px] w-full">
       <div className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card">
@@ -27,6 +27,12 @@ const ServiceCard = ({ index, name, comment, score }) => {
           <h4 className='text-white text-[15px] font-bold text-center'>
             {comment}
           </h4>
+					<h4 className='text-white text-[15px] font-bold text-center'>
+            <span className='text-purple-600'>Cost: </span>{cost} BDT
+          </h4>
+					<h4 className='text-white text-[15px] font-bold text-center'>
+						<span className='text-purple-600'>Time: </span>{time} H
+          </h4>
         </div>
       </div>
     </Tilt>
@@ -37,6 +43,8 @@ const TripRoutes = () => {
   const location = useLocation();
   const transportations = location.state?.transportations || [];
 	const destination = location.state?.destination || '';
+	const cost = location.state?.cost || -1;
+	const time = location.state?.time || -1;
 
   // Sort transportations by score in descending order
   const sortedTransportations = transportations.sort((a, b) => b.score - a.score);
@@ -51,7 +59,7 @@ const TripRoutes = () => {
 
         <div className="mt-20 flex flex-wrap gap-10">
           {sortedTransportations.map((trip, index) => (
-            <ServiceCard key={trip.name} index={index} {...trip} />  
+            <ServiceCard key={trip.name} index={index} cost={cost} time={time} {...trip} />  
           ))}
         </div>
       </div>

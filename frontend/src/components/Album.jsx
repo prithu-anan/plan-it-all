@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { trip1, trip2, trip3, trip4, trip5, trip6, plus } from '../assets';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogContent } from '@mui/material';
 
 const containerVariants = {
   hidden: {
@@ -131,16 +131,23 @@ const Album = () => {
           />
         </div>
 
-        {/* Image Grid */}
+        {/* Image Grid with Motion */}
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-10'>
           {images.map((src, index) => (
-            <div key={index} className='w-full h-full' onClick={() => handleImageClick(src)}>
+            <motion.div
+              key={index}
+              className='w-full h-full cursor-pointer'
+              onClick={() => handleImageClick(src)} // Click to open image
+              initial={{ opacity: 0, scale: 0.95 }} // Initial animation state
+              animate={{ opacity: 1, scale: 1 }} // Animation on render
+              transition={{ duration: 1 }} // Transition settings
+            >
               <img
                 src={src}
                 alt={`Album ${index}`}
-                className='w-full h-full object-cover rounded-lg shadow-lg cursor-pointer'
+                className='w-full h-full object-cover rounded-lg shadow-lg'
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
