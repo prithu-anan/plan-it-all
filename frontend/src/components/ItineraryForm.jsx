@@ -3,7 +3,7 @@ import ReactCardFlip from 'react-card-flip';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const ItineraryForm = () => {
@@ -79,8 +79,45 @@ const ItineraryForm = () => {
     console.log(location);
   }, []);
 
+  const geoJsonData = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "segments": [
+            {
+              "distance": 664.7,
+              "duration": 147.6,
+              "steps": [
+                { "distance": 1.8, "instruction": "Head west", "name": "Gerhart-Hauptmann-Straße" },
+                { "distance": 313.8, "instruction": "Turn right", "name": "Wielandtstraße" }
+              ]
+            }
+          ]
+        },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [8.681495, 49.414599],
+            [8.68147, 49.414599],
+            [8.681488, 49.41465],
+            [8.681423, 49.415746],
+            [8.681656, 49.41659],
+            [8.681826, 49.417081],
+            [8.681881, 49.417392],
+            [8.682461, 49.417389],
+            [8.683595, 49.417372],
+            [8.685015, 49.419257],
+            [8.690123, 49.419833]
+          ]
+        }
+      }
+    ]
+  };
+
   return (
-    <section className="relative w-full h-screen mx-auto pt-25">
+    <section className="relative w-full h-screen mx-auto pt-24">
 
     <div className="text-center">
       <h1 className="text-4xl font-bold text-[#915eff]">
@@ -88,7 +125,7 @@ const ItineraryForm = () => {
       </h1>
     </div>
 
-      <div className="absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row gap-10 mt-10">
+      <div className="absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row gap-10 mt-20">
         
         {/* Left Column: Card */}
         <div className="w-1/2">
@@ -212,16 +249,20 @@ const ItineraryForm = () => {
         location.error ? (
           <div>Error: {location.error.message}</div>
         ) : (
-          <div>
+          <div className="rounded-lg overflow-hidden">
             <MapContainer
-              center={[location.coordinates.lat, location.coordinates.lng]}
+              // center={[location.coordinates.lat, location.coordinates.lng]}
+              center={[49.41659, 8.681656]}
               zoom={13}
-              style={{ height: '500px', width: '100%' }}
+              style={{ height: '540px', width: '100%' }}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
+
+              <GeoJSON data={geoJsonData} />
+              <Marker position={[49.41659, 8.681656]}/>
               <Marker position={[location.coordinates.lat, location.coordinates.lng]}>
                 <Popup>
                   You are here!
