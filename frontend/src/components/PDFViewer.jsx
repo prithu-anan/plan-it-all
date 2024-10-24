@@ -22,7 +22,7 @@ const PDFViewer = () => {
 					<iframe
 						src="../public/Cracking the Coding Interview.pdf"
 						title="pdf"
-						className="w-full h-[120vh]"
+						className="w-full h-[120vh] pb-10"
 					/>
 					</div>
     	</div>
