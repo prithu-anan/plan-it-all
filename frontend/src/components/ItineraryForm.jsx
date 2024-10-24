@@ -13,6 +13,9 @@ const ItineraryForm = () => {
   const [preferences, setPreferences] = useState('');
   const [itinerary, setItinerary] = useState(null);
 
+  const [transportation, setTransportation] = useState('');
+
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
@@ -70,17 +73,18 @@ const ItineraryForm = () => {
             </label>
 
             <label className="block mb-4">
-              <span className="text-[#915eff] font-medium">Trip Start Date:</span>
-              <DatePicker 
-                selected={startDate} 
-                onChange={(date) => setStartDate(date)} 
-                dateFormat="dd/MM/yyyy"
-                className="mt-1 block w-full px-3 py-2 bg-blue-100 border border-gray-400 rounded-md shadow-sm text-blue-800"
-              />
-            </label>
+            <span className="block text-[#915eff] font-medium mb-2">Trip Start Date:</span>
+            <DatePicker 
+              selected={startDate} 
+              onChange={(date) => setStartDate(date)} 
+              dateFormat="dd/MM/yyyy"
+              className="block w-full px-3 py-2 bg-blue-100 border border-gray-400 rounded-md shadow-sm text-blue-800"
+            />
+          </label>
+
 
             <label className="block mb-4">
-              <span className="text-[#915eff] font-medium">Trip End Date:</span>
+              <span className="block text-[#915eff] font-medium">Trip End Date:</span>
               <DatePicker 
                 selected={endDate} 
                 onChange={(date) => setEndDate(date)} 
@@ -126,24 +130,40 @@ const ItineraryForm = () => {
 
           {/* Back side - Itinerary */}
           {itinerary && (
-            <div className="max-w-lg w-[50%] mx-auto bg-white p-8 rounded-lg shadow-md items-center">
+            <div className="max-w-2xl w-full mx-auto bg-tertiary p-8 rounded-lg shadow-md items-center">
               <h2 className="text-2xl font-bold text-center mb-4 text-purple-800">Your Itinerary</h2>
-              <p><strong>Destination:</strong> {itinerary.destination}</p>
-              <p><strong>Trip Dates:</strong> {itinerary.tripStartDate} - {itinerary.tripEndDate}</p>
-              <p><strong>Budget:</strong> ${itinerary.budget}</p>
-              <p><strong>Preferences:</strong> {itinerary.preferences}</p>
-              <p><strong>Transportation:</strong> {itinerary.transportation}</p>
-              <p><strong>Meals:</strong> {itinerary.meals}</p>
-              <p><strong>Accommodation:</strong> {itinerary.accommodation}</p>
-              <p><strong>Total Estimated Cost:</strong> ${itinerary.totalCost}</p>
+              <p className="mb-4"><strong class="text-[#915eff]">Destination:</strong> {itinerary.destination}</p>
+              <p className="mb-4"><strong class="text-[#915eff]">Trip Dates:</strong> {itinerary.tripStartDate} - {itinerary.tripEndDate}</p>
+              <p className="mb-4"><strong class="text-[#915eff]">Budget:</strong> ${itinerary.budget}</p>
+              <p className="mb-4"><strong class="text-[#915eff]">Preferences:</strong> {itinerary.preferences}</p>
+              <label className="block mb-4">
+                <span className="text-[#915eff] font-medium">Transportation:</span>
+                <select 
+                  value={transportation} 
+                  onChange={(e) => setTransportation(e.target.value)} 
+                  required 
+                  className="mt-1 block w-full px-3 py-2 bg-blue-100 text-blue-800 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-purple-600 focus:ring-purple-600"
+                >
+                  <option value="" disabled>Select transportation</option>
+                  <option value="Bus">Bus</option>
+                  <option value="Ferry">Ferry</option>
+                  <option value="Flight">Flight</option>
+                  <option value="Train">Train</option>
+                </select>
+              </label>
+
+              <p className="mb-4"><strong class="text-[#915eff]">Meals:</strong> {itinerary.meals}</p>
+              <p className="mb-4"><strong class="text-[#915eff]">Accommodation:</strong> {itinerary.accommodation}</p>
+              <p className="mb-4"><strong class="text-[#915eff]">Total Estimated Cost:</strong> ${itinerary.totalCost}</p>
               <button 
                 onClick={handleFlipBack} 
-                className="mt-4 mx-auto block py-2 px-4 bg-purple-800 text-white font-semibold rounded-md shadow-md hover:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-primary"
+                className="mx-auto block py-2 px-4 bg-purple-800 text-white font-semibold rounded-md shadow-md hover:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-primary"
               >
                 Back to Form
               </button>
             </div>
           )}
+
 
         </ReactCardFlip>
       </div>
