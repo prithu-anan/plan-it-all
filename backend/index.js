@@ -2,7 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const { PrismaClient } = require('@prisma/client');
-
+const userRouter = require('./router/userRouter');
 const prisma = new PrismaClient();
 
 require("dotenv").config();
@@ -32,6 +32,8 @@ async function checkDatabaseConnection() {
     app.listen(PORT, "0.0.0.0", () => {
       console.log("listening on port " + PORT);
     });
+
+    app.use("/user",userRouter);
   
     app.use("/", (req, res) => {
       res.json("welcome to Plan It All");
