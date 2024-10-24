@@ -5,13 +5,21 @@ import { styles } from '../styles'
 import { services } from '../constants'
 import { fadeIn, textVariant } from '../utils/motion'
 import { SectionWrapper } from '../hoc'
+import { useNavigate } from 'react-router-dom'
 
 const ServiceCard = ({ index, title, icon }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate('/itinerary'); // Navigate to the provided route
+  };
+
   return(
-    <Tilt className="xs:w-[250px] w-full">
+    <Tilt className="xs:w-[250px] w-full" >
       <motion.div
         variants={fadeIn("right", "spring", index * 0.5, 0.75)}
         className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card"
+        onClick={() => {handleCardClick()}}
       >
         <div
           options={{
@@ -36,7 +44,7 @@ const About = () => {
     <>
       <motion.div variants={textVariant()}>
         <p className={styles.sectionSubText}>Introduction</p>
-        <h2 className={styles.sectionHeadText}>Overview</h2>
+        <h2 className={styles.sectionHeadText}>Our Features</h2>
       </motion.div>
 
       <motion.p

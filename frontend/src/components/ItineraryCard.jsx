@@ -119,7 +119,7 @@ const ItineraryCard = ({ onFormSubmit, handleFlipBack, itinerary, isFlipped }) =
             <select
               value={itinerary.transportation}
               className="mt-1 block w-full px-3 py-2 bg-blue-100 text-blue-800 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-purple-600 focus:ring-purple-600"
-              disabled
+              // disabled
             >
               <option value="Bus">Bus</option>
               <option value="Ferry">Ferry</option>

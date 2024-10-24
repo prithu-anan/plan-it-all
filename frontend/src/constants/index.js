@@ -27,20 +27,12 @@ import {
   
   export const navLinks = [
     {
+      id: "album",
+      title: "Album",
+    },
+    {
       id: "itinerary",
       title: "Itinerary",
-    },
-    {
-      id: "about",
-      title: "About",
-    },
-    {
-      id: "work",
-      title: "Work",
-    },
-    {
-      id: "contact",
-      title: "Contact",
     },
     {
       id: "auth",
@@ -50,22 +42,51 @@ import {
   
   const services = [
     {
-      title: "Web Developer",
+      title: "Itinearary Generator",
       icon: web,
     },
     {
-      title: "React Native Developer",
+      title: "Live Locations",
       icon: mobile,
     },
     {
-      title: "Backend Developer",
+      title: "Weather Notifications",
       icon: backend,
     },
     {
-      title: "Content Creator",
+      title: "Trip Blog Generator",
       icon: creator,
     },
   ];
+
+  const tripRoutes = [
+    {
+      title: "Train-Plane",
+      comment: "The fastest route",
+      score: 20,
+    },
+    {
+      title: "Bus-Plane",
+      comment: "The cheapest route",
+      score: 15,
+    },
+    {
+      title: "Train-Bus",
+      comment: "The most scenic route",
+      score: 10,
+    },
+    {
+      title: "Bus-Train",
+      comment: "The most eco-friendly route",
+      score: 5,
+    },
+    {
+      title: "Plane-Train",
+      comment: "The most convenient route",
+      score: 25,
+    }
+  ];
+
   
   const technologies = [
     {
@@ -270,4 +291,4 @@ import {
     },
   ];
   
-  export { services, technologies, experiences, testimonials, projects };
+  export { services, tripRoutes, technologies, experiences, testimonials, projects };

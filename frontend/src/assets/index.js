@@ -32,6 +32,15 @@ import tripguide from "./tripguide.png";
 
 import plan from "./plan.svg";
 
+import trip1 from "./trip/trip1.jpeg";
+import trip2 from "./trip/trip2.jpg";
+import trip3 from "./trip/trip3.jpeg";
+import trip4 from "./trip/trip4.jpg";
+import trip5 from "./trip/trip5.jpeg";
+import trip6 from "./trip/trip6.jpg";
+
+import plus from "./icon/plus.svg";
+
 export {
   logo,
   backend,
@@ -62,4 +71,11 @@ export {
   jobit,
   tripguide,
   plan,
+  trip1,
+  trip2,
+  trip3,
+  trip4,
+  trip5,
+  trip6,
+  plus,
 };

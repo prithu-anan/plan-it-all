@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
 import { login, signup } from '../api-helpers';
+import { useNavigate } from 'react-router-dom';
 
 const LoginRegistrationCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loginInfo, setLoginInfo] = useState({ email: '', password: '' });
   const [registrationInfo, setRegistrationInfo] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [passwordError, setPasswordError] = useState('');
+
+  const navigate = useNavigate();
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -19,7 +22,10 @@ const LoginRegistrationCard = () => {
         email: loginInfo.email,
         password: loginInfo.password
     }).then((res) => {
-        console.log('Login Info:', loginInfo);
+        if(res?.success) {
+            localStorage.setItem('token', res.token);
+            navigate('/itinerary');
+        }  
     })
   };
 
@@ -35,6 +41,7 @@ const LoginRegistrationCard = () => {
         password: registrationInfo.password
       }).then((res) => {
         console.log('Registration Info:', res);
+        setIsFlipped(!isFlipped);
       })
       // Proceed with registration logic here
     }
