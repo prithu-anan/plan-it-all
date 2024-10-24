@@ -19,14 +19,72 @@ model Route {
   destId         Int    @unique
   dest           Description       @relation("RouteDest", fields: [destId], references: [id])
 
+  // One-to-one relation with Trip
+  trip           Trip?
+  
   transportations Transportation[]
+}
+
+model Trip {
+  id             Int      @id @default(autoincrement())
+  routeId        Int      @unique
+  route          Route    @relation(fields: [routeId], references: [id])
+  
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+
+  startDate      DateTime
+  endDate        DateTime
+  budget         Float
+
+  images         Image[]
+  blog           Blog?
+}
+
+model Image {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  tripId      Int?
+  trip        Trip?    @relation(fields: [tripId], references: [id])
+
+  url         String
+  description String   // For natural language search
+  uploadedAt  DateTime @default(now())
+}
+
+model Blog {
+  id          Int      @id @default(autoincrement())
+  tripId      Int      @unique
+  trip        Trip     @relation(fields: [tripId], references: [id])
+
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String
+
+  trips       Trip[]
+  images      Image[]
+  blogs       Blog[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Transportation {
   id      Int     @id @default(autoincrement())
   name    String  // e.g., 'bus + ferry', 'truck + bike'
 
-  // Foreign key to Route
   routeId Int
   route   Route   @relation(fields: [routeId], references: [id])
 
@@ -37,9 +95,8 @@ model Waypoint {
   id         Int    @id @default(autoincrement())
   medium     String // e.g., 'bus', 'ferry'
   time       String // e.g., '6-7 hours'
-  cost       Int    // Cost in integer format
+  cost       Int
 
-  // Foreign key to Transportation
   transportationId Int
   transportation   Transportation @relation(fields: [transportationId], references: [id])
 
@@ -50,13 +107,11 @@ model Description {
   id         Int    @id @default(autoincrement())
   latitude   Float
   longitude  Float
-  geojson    Json? // Storing geojson objects (optional)
+  geojson    Json?  // Optional geojson data
 
-  // One-to-one relations for src and dest in Route
   routeSrc   Route? @relation("RouteSrc")
   routeDest  Route? @relation("RouteDest")
 
-  // Foreign key to Waypoint (optional, for non-route descriptions)
   waypointId Int?
   waypoint   Waypoint? @relation(fields: [waypointId], references: [id])
 }
