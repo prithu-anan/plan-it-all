@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
-import { signup } from '../api-helpers';
+import { login, signup } from '../api-helpers';
 
 const LoginRegistrationCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -15,7 +15,12 @@ const LoginRegistrationCard = () => {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    console.log('Login Info:', loginInfo);
+    login({
+        email: loginInfo.email,
+        password: loginInfo.password
+    }).then((res) => {
+        console.log('Login Info:', loginInfo);
+    })
   };
 
   const handleRegistrationSubmit = (e) => {
