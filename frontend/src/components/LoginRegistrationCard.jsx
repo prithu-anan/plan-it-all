@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactCardFlip from 'react-card-flip';
+import { signup } from '../api-helpers';
 
 const LoginRegistrationCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -23,7 +24,13 @@ const LoginRegistrationCard = () => {
       setPasswordError("Passwords don't match");
     } else {
       setPasswordError('');
-      console.log('Registration Info:', registrationInfo);
+      signup({
+        name: registrationInfo.name,
+        email: registrationInfo.email,
+        password: registrationInfo.password
+      }).then((res) => {
+        console.log('Registration Info:', res);
+      })
       // Proceed with registration logic here
     }
   };
