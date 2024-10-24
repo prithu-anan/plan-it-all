@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = new PrismaClient();
 const ai = require('./ai/waypoint');
+const geocode = require('./ai/geocode');
 
 // Helper function to generate JWT
 function generateToken(user) {
@@ -87,8 +88,14 @@ async function getAllUsers(req, res) {
 }
 
 async function getRoutes(req, res) {
-  const { src, dest } = req.query; // Source and destination from query params
+  const { lat,lon, dest } = req.query; // Source and destination from query params
 
+  const location = await geocode.getPlaceName(lat,lon);
+
+  console.log(location);
+
+  src = location.display_name ;
+  
   console.log(`Fetching route from ${src} to ${dest}`);
 
   try {
