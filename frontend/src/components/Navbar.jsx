@@ -29,7 +29,7 @@ const Navbar = () => {
           {navLinks.map((link) => ( 
             <li key={link.id}>
               <Link
-                to={`#${link.id}`}
+                to={`${link.id}`}
                 className={`${
                   active === link.title
                     ? "text-white"
@@ -57,7 +57,7 @@ const Navbar = () => {
               {navLinks.map((link) => ( 
                 <li key={link.id}>
                   <Link
-                    to={`#${link.id}`}
+                    to={`${link.id}`}
                     className={`${
                       active === link.title
                         ? "text-white"

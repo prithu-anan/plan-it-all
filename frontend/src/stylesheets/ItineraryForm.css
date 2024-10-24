@@ -1,0 +1,25 @@
+form {
+  margin: 20px;
+}
+
+label {
+	display: block;
+	margin: 10px 0;
+}
+
+button {
+	margin-top: 10px;
+}
+
+.itinerary-card {
+	border: 1px solid #ccc;
+	padding: 20px;
+	margin: 20px;
+	border-radius: 5px;
+	background-color: #f9f9f9;
+}
+
+.filters {
+	margin: 20px;
+}
+  
