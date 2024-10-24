@@ -13,7 +13,7 @@ const Hero = () => {
         <div>
           <h1 className={`${styles.heroHeadText} text-white`}>Plan Your Next <span className="text-[#915eff]">Trip</span></h1>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-            Where do you <br className="sm:block hidden"/> want to go?
+            Where do you want to go?
           </p>
         </div>
       </div>
