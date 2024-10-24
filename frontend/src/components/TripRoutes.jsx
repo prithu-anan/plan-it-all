@@ -8,46 +8,35 @@ import { SectionWrapper } from '../hoc'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const ServiceCard = ({ index, name, comment, score }) => {
-  const navigate = useNavigate();
-
-  const handleCardClick = () => {
-    navigate('/map'); // Navigate to the provided route
-  };
-
-  return(
+  return (
     <Tilt className="xs:w-[250px] w-full">
-			<div
-				className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card"
-				onClick={() => { handleCardClick() }}
-			>
-				<div
-					options={{
-						max: 45,
-						scale: 1,
-						speed: 450
-					}}
-					className="bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col"
-				>
-					<h3 className='text-white text-[25px] font-bold text-center'>
-						{name}
-					</h3>
-					<h4 className='text-white text-[15px] font-bold text-center'>
-						{comment}
-					</h4>
-				</div>
-				<div className='absolute inset-0 flex justify-end m-3 card-img_hover'>
-					<div className='bg-purple-950 text-white py-1 px-3 rounded-md shadow-md h-8'>
-						<p>Score: {score}</p>
-					</div>
-				</div>
-			</div>
-		</Tilt>
-  )
+      <div className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card">
+        <div className="bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col relative">
+          {/* Recommended Sticker */}
+          {index === 0 && (
+            <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold py-1 px-2 rounded-full">
+              Recommended
+            </div>
+          )}
+					<div className="absolute top-2 right-2 bg-purple-800 text-white text-xs font-bold py-1 px-2 rounded-full">
+            Score: {score}
+          </div>
+          <h3 className='text-white text-[25px] font-bold text-center'>
+            {name}
+          </h3>
+          <h4 className='text-white text-[15px] font-bold text-center'>
+            {comment}
+          </h4>
+        </div>
+      </div>
+    </Tilt>
+  );
 }
 
 const TripRoutes = () => {
   const location = useLocation();
   const transportations = location.state?.transportations || [];
+	const destination = location.state?.destination || '';
 
   // Sort transportations by score in descending order
   const sortedTransportations = transportations.sort((a, b) => b.score - a.score);
@@ -56,8 +45,8 @@ const TripRoutes = () => {
     <section className="relative w-full h-screen mx-auto pt-56">
       <div className="flex flex-col items-center">
         <motion.div variants={textVariant()}>
-          <p className={`${styles.sectionSubText} text-center`}>Destination</p>
-          <h2 className={styles.sectionHeadText}>Choose Your Route</h2>
+          <p className={`${styles.sectionSubText} text-center`}>Choose Your <span className="text-purple-800">Route</span></p>
+          <h2 className={`${styles.sectionHeadText} text-center uppercase`}>{destination}</h2>
         </motion.div>
 
         <div className="mt-20 flex flex-wrap gap-10">

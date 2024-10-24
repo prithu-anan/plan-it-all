@@ -38,7 +38,7 @@ const NewItineraryForm = () => {
         if(res) {
             localStorage.setItem('start', tripInfo.startDate);
             localStorage.setItem('end', tripInfo.endDate);
-            navigate('/routes', { state: { transportations: res.transportations } });
+            navigate('/routes', { state: { transportations: res.transportations, destination: tripInfo.destination } });
         }  
     })
   };
