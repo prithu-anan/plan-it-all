@@ -1,11 +1,18 @@
 # npx prisma migrate dev --name init
 
-
 ### need a database schema for the following json
 
 {
-    src: string,
-    dest: string,
+src: { name:
+latitude:
+longitude:
+geojson:
+},
+dest: { name:  
+ latitude:
+ longitude:
+ geojson:
+},
 
     transportations: [
 
@@ -13,48 +20,48 @@
             waypoints: [
                 {
                     description:[
-                        {   
+                        {
                             latitude:
                             longitude:
-                            geojson: 
+                            geojson:
                         }
                     ],
 
                     medium: String,
-                    time: 
+                    time:
                     cost: int
                 }
             ],
 
-            comment: 
-            score: 
+            comment:
+            score:
         }
     ]
+
 }
 
-
-Example: 
+Example:
 
 {
-    src: Dhaka,
-    dest: Saint Martin,
-    transportations:[
-        {
-            name: bus + ferry
-            waypoints:[
-                {
-                    description: [
-                        {  
-                            latitude: 23,
-                            longitude: 24,
-                            geojson: a json object containing multiple things
-                        },
-                        {  
-                            latitude: 23,90,
-                            longitude: 24,90,
-                            geojson: a json object containing multiple things
-                        }
-                    ],
+src: Dhaka,
+dest: Saint Martin,
+transportations:[
+{
+name: bus + ferry
+waypoints:[
+{
+description: [
+{
+ latitude: 23,
+longitude: 24,
+geojson: a json object containing multiple things
+},
+{
+ latitude: 23,90,
+longitude: 24,90,
+geojson: a json object containing multiple things
+}
+],
 
                     time: 6-7 hours,
                     medium : bus,
@@ -75,7 +82,7 @@ Example:
                     ],
                     time: ,
                     medium: ,
-                    cost: 
+                    cost:
                 },
             ] ,
 
@@ -88,4 +95,5 @@ Example:
             ...........
         }
     ]
+
 }
