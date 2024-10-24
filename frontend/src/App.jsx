@@ -2,8 +2,10 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Hero, Navbar, NewItineraryForm, LoginRegistrationCard, About, StarsCanvas, TripRoutes, PDFViewer } from './components'
 import Album from "./components/Album";
 import NewMapView from "./components/NewMapView";
+import { useState } from "react";
 
 function App() {
+  
   return (
     <BrowserRouter>
       <div className="relative z-0">
@@ -27,10 +29,10 @@ function App() {
                 </div>
               } 
             />
-            <Route path="/itinerary" element={<NewItineraryForm />} />
+            <Route path="/itinerary" element={<NewItineraryForm/>} />
             <Route path="/auth" element={<LoginRegistrationCard />} />
             <Route path="/album" element={<Album />} />
-            <Route path="/routes" element={<TripRoutes />} />
+            <Route path="/routes" element={<TripRoutes/>} />
             <Route path="/map" element={<NewMapView/>} />
             <Route path="/pdf" element={<PDFViewer />} />
           </Routes>

@@ -35,10 +35,10 @@ const NewItineraryForm = () => {
         lon: location.coordinates.lng,
         dest: tripInfo.destination,
     }).then((res) => {
-        if(res?.success) {
+        if(res) {
             localStorage.setItem('start', tripInfo.startDate);
             localStorage.setItem('end', tripInfo.endDate);
-            navigate('/routes');
+            navigate('/routes', { state: { transportations: res.transportations } });
         }  
     })
   };

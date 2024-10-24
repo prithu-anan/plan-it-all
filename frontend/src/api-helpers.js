@@ -39,16 +39,22 @@ export const login = async(req) => {
     return res.data;
 };
 
-export const getRoutes = async({lat, lon, dest}) => {
-    
-        let res;
-    
-        try{
-            res = await axios.get(`user/route?lat=${lat}&lon=${lon}&dest=${dest}`)
-        }catch(err){
-            console.log(err);
-        }
-    
-        console.log(res.data) ;
-        return res.data;
+
+export const getRoutes = async ({ lat, lon, dest }) => {
+    let res;
+
+    // Format lat and lon to 2 decimal places
+    const formattedLat = parseFloat(lat).toFixed(2);
+    const formattedLon = parseFloat(lon).toFixed(2);
+
+    console.log(formattedLat, formattedLon, dest);
+
+    try {
+        res = await axios.get(`user/route?lat=${formattedLat}&lon=${formattedLon}&dest=${dest}`);
+    } catch (err) {
+        console.log(err);
     }
+
+    console.log(res.data);
+    return res.data;
+};
