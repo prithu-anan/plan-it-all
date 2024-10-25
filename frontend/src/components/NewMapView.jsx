@@ -17,6 +17,7 @@ const NewMapView = () => {
   const [weatherType, setWeatherType] = useState('temperature');
   const [clickedPosition, setClickedPosition] = useState(null);
   const [showPOI, setShowPOI] = useState(false);
+  const [response, setResponse] = useState(null);
   
   // Dummy data for chart
   const weatherData = {
@@ -67,21 +68,26 @@ const NewMapView = () => {
     ],
   };
 
-  const handleOptionChange = (e, position) => {
-    setSelectedOption(e.target.value);
-    if (e.target.value === 'weather') {
-      setOpenDialog(true);
-    }
-    else if(e.target.value === 'points of interest') {
+  const handleOptionChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedOption(selectedValue); // Update the selected option state
+
+    if (selectedValue === 'weather') {
+        setOpenDialog(true);
+    } else if (selectedValue === 'points of interest') {
         console.log("Clicked position: ", clickedPosition);
-        getPOI({lat: clickedPosition.lat, lon: clickedPosition.lng}).then((res) => {
-            if(res) {
-                console.log(res);
+
+        getPOI({ lat: clickedPosition.lat, lon: clickedPosition.lng }).then((res) => {
+            if (res) {
+                console.log("POI Response:", res); // Log the response
+                const poiCoordinates = extractPOICoordinates(res); // Extract the coordinates
+                setResponse(poiCoordinates); // Set the response state
                 setShowPOI(true);
+                console.log("Extracted POI Coordinates:", poiCoordinates); // Log the extracted coordinates
             }
         });
     }
-  };
+};
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -119,6 +125,20 @@ const NewMapView = () => {
       },
     ],
   };
+
+  const extractPOICoordinates = (geoJson) => {
+    const coordinates = [];
+
+    // Iterate over each feature in the GeoJSON data
+    geoJson?.features.forEach((feature) => {
+        if (feature.geometry && feature.geometry.coordinates) {
+            // Push the coordinates to the array
+            coordinates.push(feature.geometry.coordinates);
+        }
+    });
+
+    return coordinates;
+};
 
   return (
     <section className="relative w-full h-screen mx-auto pt-44">
@@ -165,6 +185,29 @@ const NewMapView = () => {
                         </div>
                         </Popup>
                     </Marker>
+                    ))}
+
+                    {response?.map((position, index) => (
+                        <Marker key={index} position={[position[1], position[0]]} eventHandlers={{
+                            click: (e) => {
+                            setClickedPosition(e.latlng);
+                            },
+                        }}>
+                            <Popup>
+                            <div>
+                                <h3 className="font-semibold">Select an option:</h3>
+                                <select
+                                value={selectedOption}
+                                onChange={handleOptionChange}
+                                className="mt-2 w-full px-2 py-1 text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                >
+                                <option value="">Choose...</option>
+                                <option value="points of interest">Points of Interest</option>
+                                <option value="weather">Weather</option>
+                                </select>
+                            </div>
+                            </Popup>
+                        </Marker>
                     ))}
               </MapContainer>
             </div>
