@@ -16,4 +16,7 @@ userRouter.route('/login')
 userRouter.route('/route')
 .get(userController.getRoutes);
 
+userRouter.route('/pois')
+.get(userController.pointOfInterest);
+
 module.exports = userRouter;
