@@ -41,13 +41,18 @@ const ServiceCard = ({ index, cost, time, name, comment, score }) => {
 
 const TripRoutes = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const transportations = location.state?.transportations || [];
-	const destination = location.state?.destination || '';
-	const cost = location.state?.cost || -1;
-	const time = location.state?.time || -1;
+  const destination = location.state?.destination || '';
 
   // Sort transportations by score in descending order
   const sortedTransportations = transportations.sort((a, b) => b.score - a.score);
+
+  // Function to handle card click and navigate
+  const handleCardClick = (trip) => {
+		console.log(trip);
+    navigate('/map', { state: { trip } }); // Navigate to the map route with trip data
+  };
 
   return (
     <section className="relative w-full h-screen mx-auto pt-56">
@@ -59,12 +64,23 @@ const TripRoutes = () => {
 
         <div className="mt-20 flex flex-wrap gap-10">
           {sortedTransportations.map((trip, index) => (
-            <ServiceCard key={trip.name} index={index} cost={cost} time={time} {...trip} />  
+						<div className='hover:cursor-pointer' key={index} onClick={() => handleCardClick(trip)}>
+            <ServiceCard 
+              key={trip.name} 
+              index={index} 
+              cost={trip.cost} 
+              time={trip.time} 
+              name={trip.name} 
+              comment={trip.comment} 
+              score={trip.score} 
+               // Pass click handler
+            />
+						</div>
           ))}
         </div>
       </div>
     </section>
   );
-}
+};
 
 export default TripRoutes

@@ -3,7 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
-import { w } from 'maath/dist/misc-19a3ec46.esm';
+import { useLocation } from 'react-router-dom';
+import { getPOI } from '../api-helpers';
+import { set } from 'date-fns';
 
 const NewMapView = () => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -13,13 +15,37 @@ const NewMapView = () => {
   });
   const [openDialog, setOpenDialog] = useState(false);
   const [weatherType, setWeatherType] = useState('temperature');
-
+  const [clickedPosition, setClickedPosition] = useState(null);
+  const [showPOI, setShowPOI] = useState(false);
+  
   // Dummy data for chart
   const weatherData = {
     temperature: [20, 22, 21, 23, 24, 26],
     rainfall: [0, 5, 10, 15, 20, 25],
     humidity: [30, 32, 35, 33, 34, 31],
   };
+
+  const loc = useLocation()
+
+  const transportation = loc?.state.trip;
+
+//   console.log(transportation);
+
+  const extractCoordinates = (data) => {
+    const coordinates = [];
+  
+    data.waypoints.forEach(waypoint => {
+      waypoint.descriptions.forEach(location => {
+        // Push longitude and latitude in the specified format
+        coordinates.push([location.longitude, location.latitude]);
+      });
+    });
+  
+    return coordinates;
+  };
+  
+  // Extracting and formatting coordinates
+  const formattedCoordinates = extractCoordinates(transportation);
 
   const geoJsonData = {
     type: 'FeatureCollection',
@@ -28,22 +54,32 @@ const NewMapView = () => {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [
-            [8.681495, 49.414599],
-            [8.68147, 49.414599],
-            [8.681488, 49.41465],
-            [8.681423, 49.415746],
-            [8.681656, 49.41659],
-          ],
+        //   coordinates: [
+        //     [8.681495, 49.414599],
+        //     [8.68147, 49.414599],
+        //     [8.681488, 49.41465],
+        //     [8.681423, 49.415746],
+        //     [8.681656, 49.41659],
+        //   ],
+        coordinates: formattedCoordinates
         },
       },
     ],
   };
 
-  const handleOptionChange = (e) => {
+  const handleOptionChange = (e, position) => {
     setSelectedOption(e.target.value);
     if (e.target.value === 'weather') {
       setOpenDialog(true);
+    }
+    else if(e.target.value === 'points of interest') {
+        console.log("Clicked position: ", clickedPosition);
+        getPOI({lat: clickedPosition.lat, lon: clickedPosition.lng}).then((res) => {
+            if(res) {
+                console.log(res);
+                setShowPOI(true);
+            }
+        });
     }
   };
 
@@ -98,7 +134,7 @@ const NewMapView = () => {
           ) : (
             <div className="rounded-lg overflow-hidden">
               <MapContainer
-                center={[location.coordinates.lat, location.coordinates.lng]}
+                center={[formattedCoordinates[0][1], formattedCoordinates[0][0]]}
                 zoom={13}
                 style={{ height: '540px', width: '100%' }}
               >
@@ -107,42 +143,29 @@ const NewMapView = () => {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
                 <GeoJSON data={geoJsonData} />
-                <Marker position={[49.41659, 8.681656]}>
-                  <Popup>
-                    <div>
-                      <h3 className="font-semibold">Select an option:</h3>
-                      <select
-                        value={selectedOption}
-                        onChange={handleOptionChange}
-                        className="mt-2 w-full px-2 py-1 text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                      >
-                        <option value="">Choose...</option>
-                        <option value="restaurants">Restaurants</option>
-                        <option value="shops">Shops</option>
-                        <option value="hospitals">Hospitals</option>
-                        <option value="weather">Weather</option>
-                      </select>
-                    </div>
-                  </Popup>
-                </Marker>
-                <Marker position={[location.coordinates.lat, location.coordinates.lng]}>
-                  <Popup>
-                    <div>
-                      <h3 className="font-semibold">Select an option:</h3>
-                      <select
-                        value={selectedOption}
-                        onChange={handleOptionChange}
-                        className="mt-2 w-full px-2 py-1 border text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                      >
-                        <option value="">Choose...</option>
-                        <option value="restaurants">Restaurants</option>
-                        <option value="shops">Shops</option>
-                        <option value="hospitals">Hospitals</option>
-                        <option value="weather">Weather</option>
-                      </select>
-                    </div>
-                  </Popup>
-                </Marker>
+                
+                {formattedCoordinates.map((position, index) => (
+                    <Marker key={index} position={[position[1], position[0]]} eventHandlers={{
+                        click: (e) => {
+                          setClickedPosition(e.latlng);
+                        },
+                      }}>
+                        <Popup>
+                        <div>
+                            <h3 className="font-semibold">Select an option:</h3>
+                            <select
+                            value={selectedOption}
+                            onChange={handleOptionChange}
+                            className="mt-2 w-full px-2 py-1 text-white border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            >
+                            <option value="">Choose...</option>
+                            <option value="points of interest">Points of Interest</option>
+                            <option value="weather">Weather</option>
+                            </select>
+                        </div>
+                        </Popup>
+                    </Marker>
+                    ))}
               </MapContainer>
             </div>
           )
@@ -150,6 +173,15 @@ const NewMapView = () => {
           <div>Loading...</div>
         )}
       </div>
+
+      <div className='flex justify-center my-4'> {/* Centering the button horizontally */}
+        <button className='flex items-center'>
+            <a href="/itinerary" className="py-2 px-4 bg-purple-800 text-white font-semibold rounded-md shadow-md hover:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-primary">
+                Confirm Trip
+            </a>
+        </button>
+    </div>
+
 
       {/* Weather Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">

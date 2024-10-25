@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { trip1, trip2, trip3, trip4, trip5, trip6, plus } from '../assets';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
-import { Dialog, DialogContent } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from '@mui/material';
 
 const containerVariants = {
   hidden: {
@@ -35,10 +35,14 @@ const Album = () => {
   const [imageUrl, setImageUrl] = useState(null); // URL of uploaded image
   const [selectedImage, setSelectedImage] = useState(null); // Currently selected image
   const [openDialog, setOpenDialog] = useState(false); // Dialog open state
+  const [openImageDialog, setOpenImageDialog] = useState(false); // Image dialog open state
+  const [place, setPlace] = useState('');
+  const [time, setTime] = useState('');
+  const [description, setDescription] = useState('');
 
   // Handle the button click to trigger file input
   const handlePlusClick = () => {
-    fileInputRef.current.click(); // Trigger the hidden file input
+    setOpenDialog(true); // Open the dialog instead of file input
   };
 
   // Handle file input change (when an image is selected)
@@ -82,13 +86,27 @@ const Album = () => {
   // Function to open the dialog with the selected image
   const handleImageClick = (image) => {
     setSelectedImage(image);
-    setOpenDialog(true);
+    setOpenImageDialog(true);
   };
+
+    // Function to close the image dialog
+    const handleImageCloseDialog = () => {
+        setOpenImageDialog(false);
+    };
 
   // Function to close the dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedImage(null); // Reset selected image
+    setPlace(''); // Reset place input
+    setTime(''); // Reset time input
+    setDescription(''); // Reset description input
+  };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    console.log({ imageUrl, place, time, description });
+    handleCloseDialog(); // Close the dialog after submission
   };
 
   return (
@@ -116,19 +134,10 @@ const Album = () => {
           {/* Plus Icon */}
           <div
             className="w-12 h-12 flex justify-center items-center rounded-full bg-[#915eff] cursor-pointer hover:bg-purple-800 transition-all"
-            onClick={handlePlusClick} // Trigger file input on click
+            onClick={handlePlusClick} // Open the dialog on click
           >
             <img src={plus} alt='plus' className='w-6 h-6' />
           </div>
-
-          {/* Hidden file input */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: 'none' }} // Hide the input
-            accept="image/*" // Only accept images
-            onChange={handleFileChange}
-          />
         </div>
 
         {/* Image Grid with Motion */}
@@ -152,8 +161,60 @@ const Album = () => {
         </div>
       </div>
 
+      {/* Dialog for Adding New Memory */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Add a New Memory</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleFormSubmit}>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Place"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+              required
+            />
+            <TextField
+              margin="dense"
+              type="date"
+              fullWidth
+              variant="outlined"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              required
+            />
+            <TextField
+              margin="dense"
+              label="Description"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ marginTop: '10px' }} // Adjust styling as needed
+            />
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleFormSubmit} color="primary">
+            Add Memory
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/* Dialog for Image Viewing */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="lg">
+      <Dialog open={openImageDialog} onClose={handleImageCloseDialog} fullWidth maxWidth="lg">
         <DialogContent>
           {selectedImage && (
             <img
