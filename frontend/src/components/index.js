@@ -13,6 +13,7 @@ import NewItineraryForm from './NewItineraryForm';
 import TripRoutes from './TripRoutes';
 import NewMapView from './NewMapView';
 import PDFViewer from './PDFViewer';
+import TripHistoryPage from './TripHistoryPage';
 
 export {
   Hero,
@@ -23,6 +24,7 @@ export {
   TripRoutes,
   NewMapView,
   PDFViewer,
+  TripHistoryPage,
   About,
   Tech,
   Experience,

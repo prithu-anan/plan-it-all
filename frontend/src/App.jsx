@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { Hero, Navbar, NewItineraryForm, LoginRegistrationCard, About, StarsCanvas, TripRoutes, PDFViewer } from './components'
+import { Hero, Navbar, NewItineraryForm, LoginRegistrationCard, About, StarsCanvas, TripRoutes, PDFViewer, TripHistoryPage } from './components'
 import Album from "./components/Album";
 import NewMapView from "./components/NewMapView";
 import { useState } from "react";
 
 function App() {
-  
+
   return (
     <BrowserRouter>
       <div className="relative z-0">
@@ -35,6 +35,7 @@ function App() {
             <Route path="/routes" element={<TripRoutes/>} />
             <Route path="/map" element={<NewMapView/>} />
             <Route path="/pdf" element={<PDFViewer />} />
+            <Route path="/history" element={<TripHistoryPage/>} />
           </Routes>
         </div>
       </div>
