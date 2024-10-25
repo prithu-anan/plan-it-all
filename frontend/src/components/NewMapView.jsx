@@ -3,8 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
-import { useLocation } from 'react-router-dom';
-import { getPOI } from '../api-helpers';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { confirmTrip, getPOI } from '../api-helpers';
 import { set } from 'date-fns';
 
 const NewMapView = () => {
@@ -140,6 +140,18 @@ const NewMapView = () => {
     return coordinates;
 };
 
+    const navigate = useNavigate();
+
+    const handleConfirmTrip = () => {
+        confirmTrip(loc?.state.trip.waypoints[0].transportationId).then((res) => {
+            if (res) {
+                console.log("Trip confirmed:", res);
+                navigate('/itinerary');
+            }
+        }
+    );
+}
+
   return (
     <section className="relative w-full h-screen mx-auto pt-44">
         <div>
@@ -218,10 +230,10 @@ const NewMapView = () => {
       </div>
 
       <div className='flex justify-center my-4'> {/* Centering the button horizontally */}
-        <button className='flex items-center'>
-            <a href="/itinerary" className="py-2 px-4 bg-purple-800 text-white font-semibold rounded-md shadow-md hover:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-primary">
+        <button className='flex items-center' onClick={() => {handleConfirmTrip()}}>
+            <div className="py-2 px-4 bg-purple-800 text-white font-semibold rounded-md shadow-md hover:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none shadow-primary">
                 Confirm Trip
-            </a>
+            </div>
         </button>
     </div>
 

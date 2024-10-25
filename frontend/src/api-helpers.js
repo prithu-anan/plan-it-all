@@ -77,3 +77,23 @@ export const getPOI = async ({ lat, lon }) => {
     console.log(res.data);
     return res.data;
 }
+
+export const confirmTrip = async (tid) => {
+    let res;
+
+    console.log(tid);
+
+    try{
+         res = await axios.post(`user/trip`, {  
+            "transportationId":tid,
+            "token":localStorage.getItem('token'),
+            "startDate": localStorage.getItem('start'),
+            "endDate": localStorage.getItem('end')
+          })
+    }catch(err){
+        console.log(err);
+    }
+
+    console.log(res.data) ;
+    return res.data;
+};
