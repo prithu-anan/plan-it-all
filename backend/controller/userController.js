@@ -289,4 +289,122 @@ async function pointOfInterest(req, res) {
   return res.json(poisData);
 }
 
-module.exports = { signup, login, getAllUsers, getRoutes, pointOfInterest };
+
+async function verifyToken(req, res, next) {
+  try {
+    const { token } = req.body;
+
+    // Check if token is provided
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Login required' });
+    }
+
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Fetch the user from the database using the decoded token's ID
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Login required' });
+    }
+      console.log("adding user : "+user);
+    // Attach the user to req.body.user and proceed to the next middleware
+    req.body.user = user;
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(401).json({ success: false, message: 'Login required' });
+  }
+}
+
+async function addTrip(req, res) {
+
+  const { transportationId, startDate, endDate } = req.body;
+
+  try {
+    // Step 1: Fetch the transportation and route details using transportationId
+    const transportation = await prisma.transportation.findUnique({
+      where: { id: transportationId },
+      include: {
+        route: true, // Include the associated route
+        waypoints: true, // Include waypoints to calculate the budget
+      },
+    });
+
+    if (!transportation) {
+      return res.status(404).json({ success: false, message: 'Transportation not found.' });
+    }
+
+    const routeId = transportation.route.id;
+
+    // Step 2: Calculate the total budget from the transportation's waypoints
+    const budget = transportation.waypoints.reduce((sum, waypoint) => sum + waypoint.cost, 0);
+
+    // Step 3: Extract the userId from the req.body (added by middleware)
+    const userId = req.body.user.id;
+
+    // Step 4: Create the new Trip
+    const newTrip = await prisma.trip.create({
+      data: {
+        routeId: routeId,
+        userId: userId,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        budget: budget,
+      },
+      include: {
+        route: true, // Optional: Include route data in the response
+      },
+    });
+
+    return res.status(201).json({ success: true, trip: newTrip });
+  } catch (error) {
+    console.error('Error creating trip:', error);
+    res.status(500).json({ success: false, message: 'Failed to create trip.' });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+
+async function getAllTrips(req, res) {
+  try {
+    // Step 1: Extract the userId from req.body.user (added by middleware)
+    const userId = req.body.user.id;
+
+    // Step 2: Fetch all trips for the user from the database
+    const trips = await prisma.trip.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        route: {
+          include: {
+            src: true, // Include source description
+            dest: true, // Include destination description
+          },
+        },
+        images: true, // Include any images associated with the trip
+        blog: true, // Include blog if available
+      },
+    });
+
+    // Step 3: Return the trips or an empty array if no trips found
+    if (!trips.length) {
+      return res.status(404).json({ success: false, message: 'No trips found.' });
+    }
+
+    return res.status(200).json({ success: true, trips: trips });
+  } catch (error) {
+    console.error('Error fetching trips:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch trips.' });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+
+module.exports = { signup, login, getAllUsers,
+   getRoutes, pointOfInterest,addTrip,verifyToken,
+  getAllTrips };

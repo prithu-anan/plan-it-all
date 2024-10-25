@@ -19,4 +19,8 @@ userRouter.route('/route')
 userRouter.route('/pois')
 .get(userController.pointOfInterest);
 
+userRouter.route('/trip')
+.post(userController.verifyToken,userController.addTrip)
+.get(userController.verifyToken,userController.getAllTrips);
+
 module.exports = userRouter;
