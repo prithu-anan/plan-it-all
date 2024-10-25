@@ -1,15 +1,17 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const prisma = new PrismaClient();
-const ai = require('./ai/waypoint');
-const geocode = require('./ai/geocode');
+const ai = require("./ai/waypoint");
+const geocode = require("./ai/geocode");
+const { response } = require("express");
+const pois = require("./ai/pois");
 
 // Helper function to generate JWT
 function generateToken(user) {
   return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-    expiresIn: '1d', // Token valid for 1 day
-  }); 
+    expiresIn: "1d", // Token valid for 1 day
+  });
 }
 
 // Signup Function
@@ -20,7 +22,9 @@ async function signup(req, res) {
     // Check if the email is already registered
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: 'Email already in use' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already in use" });
     }
 
     // Hash the password
@@ -35,10 +39,12 @@ async function signup(req, res) {
       },
     });
 
-    res.status(201).json({ success: true, message: 'User registered successfully' });
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 }
 
@@ -50,22 +56,26 @@ async function login(req, res) {
     // Find the user by email
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid email or password' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid email or password' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     // Generate a JWT token
     const token = generateToken(user);
 
-    res.status(200).json({ success: true, message: 'Login successful', token });
+    res.status(200).json({ success: true, message: "Login successful", token });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 }
 
@@ -83,7 +93,7 @@ async function getAllUsers(req, res) {
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 }
 function addTotalsToTransportations(route) {
@@ -99,7 +109,7 @@ function addTotalsToTransportations(route) {
       0
     );
 
-    console.log("total time: " + totalTime,"total cost: " + totalCost)
+    console.log("total time: " + totalTime, "total cost: " + totalCost);
 
     // Add totalCost and totalTime to the transportation object
     return {
@@ -116,10 +126,7 @@ function addTotalsToTransportations(route) {
   };
 }
 
-
-
 async function getRoutes(req, res) {
-
   const { lat, lon, dest } = req.query; // Source and destination from query params
 
   const location = await geocode.getPlaceName(lat, lon);
@@ -132,10 +139,10 @@ async function getRoutes(req, res) {
     const existingRoute = await prisma.route.findFirst({
       where: {
         src: {
-           name: src ,
+          name: src,
         },
         dest: {
-          name: dest ,
+          name: dest,
         },
       },
       include: {
@@ -150,16 +157,16 @@ async function getRoutes(req, res) {
     });
 
     if (existingRoute) {
-      console.log('Route found in database:', existingRoute);
+      console.log("Route found in database:", existingRoute);
       const enhancedRoute = addTotalsToTransportations(existingRoute);
-     return res.json(enhancedRoute);
+      return res.json(enhancedRoute);
     }
 
     // 2. If the route does not exist, call the external API to generate it
     const routes = await ai.generateWaypoint(src, dest);
     const jsonObject = JSON.parse(routes);
 
-    console.log('API Response:', jsonObject);
+    console.log("API Response:", jsonObject);
 
     // 3. Save the API response to the database
     const savedRoute = await prisma.route.create({
@@ -211,22 +218,75 @@ async function getRoutes(req, res) {
       },
     });
 
-    console.log('Saved route to database:', savedRoute);
+    console.log("Saved route to database:", savedRoute);
 
     const enhancedRoute = addTotalsToTransportations(savedRoute);
-     return res.json(enhancedRoute);
+    return res.json(enhancedRoute);
   } catch (err) {
-    console.error('Error fetching or saving routes:', err);
-    res.status(500).json({ success: false, message: 'An error occurred.' });
+    console.error("Error fetching or saving routes:", err);
+    res.status(500).json({ success: false, message: "An error occurred." });
   }
 }
 
-async function getTransport(req,res){
+async function getTransport(req, res) {
+  const { id } = req.query;
+  try {
+    const transport = await prisma.transportation.findUnique({
+      where: {
+        id: transport, // Filter by the transportation ID
+      },
+      include: {
+        waypoints: {
+          include: {
+            descriptions: true, // Include descriptions for waypoints
+          },
+        },
+        route: true, // Optionally include the route it belongs to
+      },
+    });
 
+    console.log("Transportation found:", transport);
+    const path = [];
+    for (const waypoint of transport.waypoints) {
+      path.push([
+        waypoint.descriptions[0].longitude,
+        waypoint.descriptions[0].latitude,
+      ]);
+    }
+    const src = [
+      transport.waypoints[0].descriptions[1].longitude,
+      transport.waypoints[0].descriptions[1].latitude,
+    ];
+    const n = transport.waypoints.length;
+    const dest = [
+      transport.waypoints[n - 1].descriptions[1].longitude,
+      transport.waypoints[n - 1].descriptions[1].latitude,
+    ];
+    const geojson = await ai.getDirections(path);
+    const jsonObject = JSON.parse(geojson);
 
+    console.log("API Response:", jsonObject);
+    return response.json({ geojson: jsonObject, waypoints: path });
+  } catch (error) {
+    console.error("Error fetching transportation:", error);
+    throw error;
+  }
 }
 
+async function pointOfInterest(req, res) {
 
+  const lon = parseFloat(req.query.lon);
+  const lat = parseFloat(req.query.lat);
 
+  // [90.4125,23.8103]
+  const locationCoordinates = [lon,lat];
+  //   const filters = {
+  //   category_ids: [108,570,620]
+  // };
+  const filters = null;
+  poisData = await pois.getPois(locationCoordinates, filters);
 
-module.exports = { signup, login, getAllUsers,getRoutes }; 
+  return res.json(poisData);
+}
+
+module.exports = { signup, login, getAllUsers, getRoutes, pointOfInterest };
